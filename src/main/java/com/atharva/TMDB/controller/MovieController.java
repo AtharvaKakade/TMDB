@@ -17,7 +17,25 @@ public class MovieController {
         this.tmdbService = tmdbService;
     }
 
+    //Section-ACCOUNT
+    //Get the public details of an account on TMDB.
+    @GetMapping("/account/{accountId}")
+    public Mono<String> getAccountDetails(@PathVariable String accountId) {
+        return tmdbService.getAccountDetails(accountId);
+    }
 
+    //Mark a movie or TV show as a favourite.
+    @PostMapping("/account/{accountId}/favorite")
+    public Mono<String> addFavorite(
+            @PathVariable String accountId,
+            @RequestBody Map<String, Object> request) {
+
+        int mediaId = (int) request.get("media_id");
+        String mediaType = (String) request.get("media_type");
+        boolean favorite = (boolean) request.get("favorite");
+
+        return tmdbService.addFavorite(accountId, mediaId, mediaType, favorite);
+    }
 
     @GetMapping("/discover/movies")
     public Mono<MovieResponse> discoverMovies(){
@@ -50,26 +68,11 @@ public class MovieController {
         return tmdbService.getNowPlayingMovies();
     }
 
-    @GetMapping("/account/{accountId}")
-    public Mono<String> getAccountDetails(@PathVariable String accountId) {
-        return tmdbService.getAccountDetails(accountId);
-    }
-
     @GetMapping("/movie/{movieId}")
-    public  Mono<String> getAccountById(@PathVariable String movieId){
+    public  Mono<String> getMovieById(@PathVariable String movieId){
         return tmdbService.getMovieByID(movieId);
     }
 
-    @PostMapping("/account/{accountId}/favorite")
-    public Mono<String> markAsFavorite(
-            @PathVariable String accountId,
-            @RequestBody Map<String, Object> request) {
 
-        int mediaId = (int) request.get("media_id");
-        String mediaType = (String) request.get("media_type");
-        boolean favorite = (boolean) request.get("favorite");
-
-        return tmdbService.markAsFavorite(accountId, mediaId, mediaType, favorite);
-    }
 
 }

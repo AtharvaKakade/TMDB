@@ -2,13 +2,10 @@ package com.atharva.TMDB.service;
 
 import com.atharva.TMDB.model.MovieResponse;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
-import reactor.util.retry.Retry;
 
-import java.time.Duration;
 import java.util.Map;
 
 @Service
@@ -27,6 +24,39 @@ public class TmdbService {
         this.webClient = webClient;
     }
 
+    //Section-ACCOUNT
+    //
+    public Mono<String> getAccountDetails(String accountId) {
+        return webClient.get()
+                .uri("/account/" + accountId)
+                .headers(headers -> {
+                    headers.setBearerAuth(apiToken);  // Set Bearer token dynamically
+                    headers.set("Accept", "application/json");
+                })
+                .retrieve()
+                .bodyToMono(String.class);
+    }
+
+    public Mono<String> addFavorite(String accountId, int mediaId, String mediaType, boolean favorite) {
+        String url = "/account/" + accountId + "/favorite";
+
+        Map<String, Object> requestBody = Map.of(
+                "media_type", mediaType,  // "movie" or "tv"
+                "media_id", mediaId,
+                "favorite", favorite
+        );
+
+        return webClient.post()
+                .uri(url)
+                .headers(headers -> {
+                    headers.setBearerAuth(apiToken);  // Authentication
+                    headers.set("Accept", "application/json");
+                    headers.set("Content-Type", "application/json");
+                })
+                .bodyValue(requestBody)  // Set JSON request body
+                .retrieve()
+                .bodyToMono(String.class);
+    }
 
     //Section-Discover
     public Mono<MovieResponse> discoverMovies() {
@@ -74,16 +104,7 @@ public class TmdbService {
                 .bodyToMono(MovieResponse.class);
     }
 
-    public Mono<String> getAccountDetails(String accountId) {
-        return webClient.get()
-                .uri("/account/" + accountId)
-                .headers(headers -> {
-                    headers.setBearerAuth(apiToken);  // Set Bearer token dynamically
-                    headers.set("Accept", "application/json");
-                })
-                .retrieve()
-                .bodyToMono(String.class);
-    }
+
 
     public Mono<String> getMovieByID(String movieId) {
         return webClient.get()
@@ -96,26 +117,26 @@ public class TmdbService {
                 .bodyToMono(String.class);
     }
 
-    public Mono<String> markAsFavorite(String accountId, int mediaId, String mediaType, boolean favorite) {
-        String url = "/account/" + accountId + "/favorite";
-
-        Map<String, Object> requestBody = Map.of(
-                "media_type", mediaType,  // "movie" or "tv"
-                "media_id", mediaId,
-                "favorite", favorite
-        );
-
-        return webClient.post()
-                .uri(url)
-                .headers(headers -> {
-                    headers.setBearerAuth(apiToken);  // Authentication
-                    headers.set("Accept", "application/json");
-                    headers.set("Content-Type", "application/json");
-                })
-                .bodyValue(requestBody)  // Set JSON request body
-                .retrieve()
-                .bodyToMono(String.class);
-    }
+//    public Mono<String> markAsFavorite(String accountId, int mediaId, String mediaType, boolean favorite) {
+//        String url = "/account/" + accountId + "/favorite";
+//
+//        Map<String, Object> requestBody = Map.of(
+//                "media_type", mediaType,  // "movie" or "tv"
+//                "media_id", mediaId,
+//                "favorite", favorite
+//        );
+//
+//        return webClient.post()
+//                .uri(url)
+//                .headers(headers -> {
+//                    headers.setBearerAuth(apiToken);  // Authentication
+//                    headers.set("Accept", "application/json");
+//                    headers.set("Content-Type", "application/json");
+//                })
+//                .bodyValue(requestBody)  // Set JSON request body
+//                .retrieve()
+//                .bodyToMono(String.class);
+//    }
 
 
 
