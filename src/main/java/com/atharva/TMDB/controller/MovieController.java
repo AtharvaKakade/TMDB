@@ -72,4 +72,6 @@ public class MovieController {
         return tmdbService.markAsFavorite(accountId, mediaId, mediaType, favorite);
     }
 
+
+
 }
