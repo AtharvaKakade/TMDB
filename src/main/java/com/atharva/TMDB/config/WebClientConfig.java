@@ -14,4 +14,5 @@ public class WebClientConfig {
                 .baseUrl("https://api.themoviedb.org/3")
                 .build();
     }
+
 }
